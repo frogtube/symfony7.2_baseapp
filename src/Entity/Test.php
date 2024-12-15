@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\TestRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TestRepository::class)]
 class Test
@@ -14,6 +15,11 @@ class Test
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        min: 5,
+        minMessage: 'The name must be at least {{ limit }} characters long'
+    )]
     private ?string $name = null;
 
     #[ORM\Column]
