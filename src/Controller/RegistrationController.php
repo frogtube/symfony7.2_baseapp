@@ -41,13 +41,20 @@ class RegistrationController extends AbstractController
             $entityManager->flush();
 
             // generate a signed url and email it to the user
-            $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
-                (new TemplatedEmail())
-                    ->from(new Address('mailer@your-domain.com', 'Your domain'))
-                    ->to((string) $user->getEmail())
-                    ->subject('Please Confirm your Email')
-                    ->htmlTemplate('registration/confirmation_email.html.twig')
-            );
+
+            try {
+                $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
+                    (new TemplatedEmail())
+                        ->from(new Address('mailer@your-domain.com', 'Your domain'))
+                        ->to((string) $user->getEmail())
+                        ->subject('Please Confirm your Email')
+                        ->htmlTemplate('registration/confirmation_email.html.twig')
+                );
+                dump(123);
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Failed to send email confirmation. Please try again later.');
+                return $this->redirectToRoute('app_register');
+            }
 
             // do anything else you need here, like send an email
             $this->addFlash('success', 'You have been registered successfully. Please check your email for a confirmation link.');
@@ -70,6 +77,7 @@ class RegistrationController extends AbstractController
             /** @var User $user */
             $user = $this->getUser();
             $this->emailVerifier->handleEmailConfirmation($request, $user);
+            
         } catch (VerifyEmailExceptionInterface $exception) {
             $this->addFlash('verify_email_error', $translator->trans($exception->getReason(), [], 'VerifyEmailBundle'));
 
