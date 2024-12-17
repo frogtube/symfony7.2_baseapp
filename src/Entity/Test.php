@@ -35,6 +35,9 @@ class Test
     #[Assert\Image()]
     private ?File $thumbnailFile = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -86,9 +89,26 @@ class Test
         return $this->thumbnailFile;
     }
 
-    public function setThumbnailFile(?File $thumbnailFile = null): static
+    public function setThumbnailFile(?File $thumbnailFile = null): void
     {
         $this->thumbnailFile = $thumbnailFile;
+
+        if (null !== $thumbnailFile) {
+            // It is required that at least one field changes if you are using doctrine
+            // otherwise the event listeners won't be called and the file is lost
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+
         return $this;
     }
 }

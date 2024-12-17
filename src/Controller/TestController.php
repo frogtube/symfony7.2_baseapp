@@ -30,6 +30,7 @@ final class TestController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $entityManager->persist($test);
             $entityManager->flush();
 
@@ -59,16 +60,7 @@ final class TestController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
-            /** @var UploadedFile $thumbnailFile */
-            $thumbnailFile = $form->get('thumbnailFile')->getData();
-            if ($thumbnailFile) {
-                $thumbnailPath = $this->getParameter('kernel.project_dir') . '/public/uploads/thumbnails';
-                $thumbnailFileName = uniqid() . '.' . $thumbnailFile->guessExtension();
-                $thumbnailFile->move($thumbnailPath, $thumbnailFileName);
-                $test->setThumbnail($thumbnailFileName);
-            }   
-
+            
             $entityManager->flush();
 
             $this->addFlash('success', 'Test updated successfully');
