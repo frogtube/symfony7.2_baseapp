@@ -9,20 +9,6 @@
                         <h2 class="card-title text-center mb-4">Contact Us</h2>
                         
                         {{ form_start(form, {'attr': {'class': ''}}) }}
-
-{% if not form.vars.valid %}
-<ul>
-    {# Loop through every form item #}
-    {% for child in form.children %}
-        {# Display the errors of the form item #}
-        {%for error in child.vars.errors%}
-            <li>{{error.message}}</li>
-        {%endfor%}
-    {%endfor%}
-</ul>
-{% endif %}
-
-
                             <div class="mb-3">  
                                 {{ form_label(form.name) }}
                                 {{ form_widget(form.name) }}

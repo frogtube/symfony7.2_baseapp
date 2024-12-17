@@ -5,15 +5,33 @@ namespace App\Repository;
 use App\Entity\Test;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\Pagination\PaginationInterface;
+use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @extends ServiceEntityRepository<Test>
  */
 class TestRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, private readonly PaginatorInterface $paginator)
     {
         parent::__construct($registry, Test::class);
+    }
+
+    public function findAllPaginated(int $page, int $limit): PaginationInterface
+    {
+        $query = $this->createQueryBuilder('t')
+            ->getQuery();
+
+        return $this->paginator->paginate(
+            $query, 
+            $page,
+            $limit,
+            [
+                'distinct' => true,
+                'sortFieldAllowList' => ['t.name', 't.id'],
+            ]
+        );
     }
 
     //    /**

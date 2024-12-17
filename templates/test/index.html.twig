@@ -8,9 +8,9 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Id</th>
+                <th>{{ knp_pagination_sortable(tests, 'Id', 't.id') }}</th>
                 <th>Thumbnail</th>
-                <th>Name</th>
+                <th>{{ knp_pagination_sortable(tests, 'Name', 't.name') }}</th>
                 <th>CreatedAt</th>
                 <th>actions</th>
             </tr>
@@ -44,4 +44,6 @@
     </table>
 
     <a href="{{ path('app_test_new') }}">Create new</a>
+
+    {{ knp_pagination_render(tests) }}
 {% endblock %}

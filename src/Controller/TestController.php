@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Test;
 use App\Form\TestType;
 use App\Repository\TestRepository;
+use Doctrine\DBAL\Query\Limit;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,10 +16,15 @@ use Symfony\Component\Routing\Attribute\Route;
 final class TestController extends AbstractController
 {
     #[Route(name: 'app_test_index', methods: ['GET'])]
-    public function index(TestRepository $testRepository): Response
+    public function index(Request $request, TestRepository $testRepository): Response
     {
+        $page = $request->query->getInt('page', 1);
+        $limit = 2;
+
+        $tests = $testRepository->findAllPaginated($page, $limit);
+        
         return $this->render('test/index.html.twig', [
-            'tests' => $testRepository->findAll(),
+            'tests' => $tests,
         ]);
     }
 
