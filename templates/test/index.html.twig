@@ -9,6 +9,7 @@
         <thead>
             <tr>
                 <th>Id</th>
+                <th>Thumbnail</th>
                 <th>Name</th>
                 <th>CreatedAt</th>
                 <th>actions</th>
@@ -18,6 +19,11 @@
         {% for test in tests %}
             <tr>
                 <td>{{ test.id }}</td>
+                <td>
+                    {% if test.thumbnail %}
+                        <img src="{{ vich_uploader_asset(test, 'thumbnailFile') }}" alt="{{ test.name }}" style="width: 100px; height: 100px;">
+                    {% endif %}
+                </td>
                 <td>{{ test.name }}</td>
                 <td>{{ test.createdAt ? test.createdAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td>

@@ -4,8 +4,10 @@ namespace App\Form;
 
 use App\Entity\Test;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Image;
 
 class TestType extends AbstractType
 {
@@ -13,7 +15,10 @@ class TestType extends AbstractType
     {
         $builder
             ->add('name')
-        ;
+            ->add('thumbnailFile', FileType::class, [
+                'label' => 'Thumbnail',
+                'required' => false,
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

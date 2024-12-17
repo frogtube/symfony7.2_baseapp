@@ -1,4 +1,9 @@
 {{ form_start(form) }}
     {{ form_widget(form) }}
+    {% if test.thumbnail %}
+        <p>
+            <img src="{{ vich_uploader_asset(test, 'thumbnailFile') }}" alt="{{ test.name }}" style="width: 100px; height: 100px;">
+        </p>
+    {% endif %}
     <button class="btn">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}
