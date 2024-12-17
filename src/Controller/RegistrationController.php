@@ -50,7 +50,7 @@ class RegistrationController extends AbstractController
                         ->subject('Please Confirm your Email')
                         ->htmlTemplate('registration/confirmation_email.html.twig')
                 );
-                dump(123);
+                
             } catch (\Exception $e) {
                 $this->addFlash('error', 'Failed to send email confirmation. Please try again later.');
                 return $this->redirectToRoute('app_register');
