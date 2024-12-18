@@ -51,15 +51,21 @@ final class TestController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_test_show', methods: ['GET'])]
-    public function show(Test $test): Response
+    #[Route('/{slug}-{id}', name: 'app_test_show', requirements: ['id' => '\d+', 'slug' => '[a-z0-9\-]+'], methods: ['GET'])]
+    public function show(string $slug, int $id, TestRepository $testRepository): Response
     {
+        // S'assure qu'on a bien la bonne url
+        $test = $testRepository->find($id);
+        if($test->getSlug() !== $slug) {
+            return $this->redirectToRoute('app_test_show', ['slug' => $test->getSlug(), 'id' => $test->getId()]);
+        }
+
         return $this->render('test/show.html.twig', [
             'test' => $test,
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_test_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'app_test_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function edit(Request $request, Test $test, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(TestType::class, $test);
@@ -79,7 +85,7 @@ final class TestController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_test_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'app_test_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function delete(Request $request, Test $test, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$test->getId(), $request->getPayload()->getString('_token'))) {

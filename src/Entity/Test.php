@@ -4,12 +4,15 @@ namespace App\Entity;
 
 use App\Repository\TestRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: TestRepository::class)]
 #[Vich\Uploadable]
+#[UniqueEntity(fields: ['name'], message: 'Ce nom existe déjà')]
+#[UniqueEntity(fields: ['slug'], message: 'Ce slug existe déjà')]
 class Test
 {
     #[ORM\Id]
@@ -19,11 +22,12 @@ class Test
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Assert\NotNull()]
     #[Assert\Length(
         min: 5,
         minMessage: 'The name must be at least {{ limit }} characters long'
     )]
-    private ?string $name = null;
+    private string $name = '';
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -40,6 +44,11 @@ class Test
 
     #[ORM\ManyToOne(inversedBy: 'tests')]
     private ?Category $category = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Regex('/^[a-z0-9]+(?:\-[a-z0-9]+)*$/', message: 'Le slug est invalide')]
+    #[Assert\NotBlank]
+    private string $slug = '';
 
     public function __construct()
     {
@@ -123,6 +132,18 @@ class Test
     public function setCategory(?Category $category): static
     {
         $this->category = $category;
+
+        return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): static
+    {
+        $this->slug = $slug;
 
         return $this;
     }
