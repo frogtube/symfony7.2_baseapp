@@ -5,12 +5,15 @@
 {% block body %}
     <h1>Test index</h1>
 
+    {{ knp_pagination_filter(tests, {'t.name': 'Name', 't.category.name': 'Category'}) }}
+
     <table class="table">
         <thead>
             <tr>
                 <th>{{ knp_pagination_sortable(tests, 'Id', 't.id') }}</th>
                 <th>Thumbnail</th>
                 <th>{{ knp_pagination_sortable(tests, 'Name', 't.name') }}</th>
+                <th>{{ knp_pagination_sortable(tests, 'Category', 't.category.name') }}</th>
                 <th>CreatedAt</th>
                 <th>actions</th>
             </tr>
@@ -25,6 +28,7 @@
                     {% endif %}
                 </td>
                 <td>{{ test.name }}</td>
+                <td>{{ test.category ? test.category.name : '' }}</td>
                 <td>{{ test.createdAt ? test.createdAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td>
                     <a href="{{ path('app_test_show', {'id': test.id}) }}">show</a>

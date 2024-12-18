@@ -16,6 +16,6 @@ class ContactDTO
 
     #[Assert\NotBlank]
     #[Assert\Length(min: 10)]
-    private ?string $message = '';
+    public ?string $message = '';
 }
 

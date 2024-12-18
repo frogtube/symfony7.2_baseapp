@@ -38,6 +38,9 @@ class Test
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    #[ORM\ManyToOne(inversedBy: 'tests')]
+    private ?Category $category = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -108,6 +111,18 @@ class Test
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): static
+    {
+        $this->category = $category;
 
         return $this;
     }

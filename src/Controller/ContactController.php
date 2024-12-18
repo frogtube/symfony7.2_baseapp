@@ -22,6 +22,8 @@ class ContactController extends AbstractController
         
         $form->handleRequest($request);
 
+        // TODO: bug fix les messages d'erreur ne sont pas affichés sur le formulaire
+
         if ($form->isSubmitted() && $form->isValid()) {
 
             $data = $form->getData();

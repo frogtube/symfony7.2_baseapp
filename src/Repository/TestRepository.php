@@ -21,6 +21,7 @@ class TestRepository extends ServiceEntityRepository
     public function findAllPaginated(int $page, int $limit): PaginationInterface
     {
         $query = $this->createQueryBuilder('t')
+            ->leftJoin('t.category', 'c')
             ->getQuery();
 
         return $this->paginator->paginate(
