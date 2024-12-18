@@ -50,6 +50,9 @@ class Test
     #[Assert\NotBlank]
     private string $slug = '';
 
+    #[ORM\ManyToOne(inversedBy: 'tests')]
+    private ?User $createdBy = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -144,6 +147,18 @@ class Test
     public function setSlug(string $slug): static
     {
         $this->slug = $slug;
+
+        return $this;
+    }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): static
+    {
+        $this->createdBy = $createdBy;
 
         return $this;
     }
