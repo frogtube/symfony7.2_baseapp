@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Test;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\Pagination\PaginationInterface;
@@ -18,16 +19,24 @@ class TestRepository extends ServiceEntityRepository
         parent::__construct($registry, Test::class);
     }
 
-    public function findAllPaginated(int $page, int $limit): PaginationInterface
+    public function findPaginated(int $page, ?int $userId = null): PaginationInterface
     {
-        $query = $this->createQueryBuilder('t')
-            ->leftJoin('t.category', 'c')
-            ->getQuery();
+        $testPerPage = 2;
+
+        $builer = $this->createQueryBuilder('t')
+            ->leftJoin('t.category', 'c');
+
+        if ($userId) {
+            $builer->andWhere('t.createdBy = :userId')
+                ->setParameter('userId', $userId);
+        }
+
+        $query = $builer->getQuery();
 
         return $this->paginator->paginate(
             $query, 
             $page,
-            $limit,
+            $testPerPage,
             [
                 'distinct' => true,
                 'sortFieldAllowList' => ['t.name', 't.id'],

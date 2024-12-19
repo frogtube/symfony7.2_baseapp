@@ -5,23 +5,30 @@ namespace App\Controller;
 use App\Entity\Test;
 use App\Form\TestType;
 use App\Repository\TestRepository;
+use App\Security\Voter\TestVoter;
 use Doctrine\DBAL\Query\Limit;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/test')]
+#[IsGranted(TestVoter::LIST)]
 final class TestController extends AbstractController
 {
     #[Route(name: 'app_test_index', methods: ['GET'])]
-    public function index(Request $request, TestRepository $testRepository): Response
+    public function index(Request $request, TestRepository $testRepository, Security $security): Response
     {
-        $page = $request->query->getInt('page', 1);
-        $limit = 2;
+        $userId = $security->getUser()->getId();
+        
+        $canListAll = $security->isGranted(TestVoter::LIST_ALL);
 
-        $tests = $testRepository->findAllPaginated($page, $limit);
+        $page = $request->query->getInt('page', 1);
+
+        $tests = $testRepository->findPaginated($page, $canListAll ? null : $userId);
         
         return $this->render('test/index.html.twig', [
             'tests' => $tests,
@@ -29,6 +36,7 @@ final class TestController extends AbstractController
     }
 
     #[Route('/new', name: 'app_test_new', methods: ['GET', 'POST'])]
+    #[IsGranted(TestVoter::CREATE)]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $test = new Test();
@@ -52,6 +60,7 @@ final class TestController extends AbstractController
     }
 
     #[Route('/{slug}-{id}', name: 'app_test_show', requirements: ['id' => '\d+', 'slug' => '[a-z0-9\-]+'], methods: ['GET'])]
+    #[IsGranted(TestVoter::VIEW, subject: 'test')]
     public function show(string $slug, int $id, TestRepository $testRepository): Response
     {
         // S'assure qu'on a bien la bonne url
@@ -66,6 +75,7 @@ final class TestController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_test_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    #[IsGranted(TestVoter::EDIT, subject: 'test')]
     public function edit(Request $request, Test $test, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(TestType::class, $test);
@@ -86,6 +96,7 @@ final class TestController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_test_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
+    #[IsGranted(TestVoter::DELETE, subject: 'test')]
     public function delete(Request $request, Test $test, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$test->getId(), $request->getPayload()->getString('_token'))) {
