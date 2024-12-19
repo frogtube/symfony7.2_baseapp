@@ -18,10 +18,6 @@ final class TestVoter extends Voter
     public const LIST_ALL = 'TEST_LIST_ALL';
     public const DELETE = 'TEST_DELETE';
 
-    public function __construct(private readonly Security $security) {
-    }
-
-
     protected function supports(string $attribute, mixed $subject): bool
     {
         return in_array($attribute, [self::LIST, self::LIST_ALL, self::CREATE]) ||
@@ -44,19 +40,13 @@ final class TestVoter extends Voter
         /** @var Test $subject */
         switch ($attribute) {
             case self::EDIT:
-                if ($subject->getCreatedBy()->getId() === $user->getId() || $this->security->isGranted('ROLE_ADMIN')) {
+                if ($subject->getCreatedBy()->getId() === $user->getId()) {
                     return true;
                 }
                 break;
 
             case self::DELETE:
-                if ($subject->getCreatedBy()->getId() === $user->getId() || $this->security->isGranted('ROLE_ADMIN')) {
-                    return true;
-                }
-                break;
-
-            case self::LIST_ALL:
-                if ($this->security->isGranted('ROLE_ADMIN')) {
+                if ($subject->getCreatedBy()->getId() === $user->getId()) {
                     return true;
                 }
                 break;
